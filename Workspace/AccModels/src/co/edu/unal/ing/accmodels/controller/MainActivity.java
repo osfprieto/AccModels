@@ -19,6 +19,7 @@ public class MainActivity extends Activity {
 	private float rawData[];
 	private float filteredData[];
 	private boolean useFilteredData;
+	private Kalman kalman;
 	
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -28,6 +29,11 @@ public class MainActivity extends Activity {
 			     WindowManager.LayoutParams.FLAG_FULLSCREEN);
 		
 		useFilteredData = true;
+		try {
+			kalman = new Kalman();
+		} catch (Exception e) {
+			useFilteredData = false;
+		}
 		
 		putOpenGLView();
 		
@@ -39,15 +45,17 @@ public class MainActivity extends Activity {
 
 	public void update(float readData[]){
 		rawData = readData;
-		filteredData = Kalman.filter(rawData);
+		
 		if(useFilteredData)
-			updateGUI(filteredData);
+			filteredData = kalman.filter(rawData);
 		else
-			updateGUI(rawData);
+			filteredData = rawData;
+		
+		updateGUI();
 	}
 	
-	private void updateGUI(float dataToUse[]){
-		renderer.setViewPoint(dataToUse);
+	private void updateGUI(){
+		renderer.setViewPoint(filteredData);
 	}
 	
 	private void putOpenGLView(){
