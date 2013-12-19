@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package co.edu.unal.ing.accmodels.gui;
+package com.example.android.opengl;
 
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
@@ -25,7 +25,7 @@ import android.opengl.GLES20;
 /**
  * A two-dimensional square for use as a drawn object in OpenGL ES 2.0.
  */
-public class Cube {
+public class Square {
 
     private final String vertexShaderCode =
             // This matrix member variable provides a hook to manipulate
@@ -55,47 +55,22 @@ public class Cube {
 
     // number of coordinates per vertex in this array
     static final int COORDS_PER_VERTEX = 3;
-    /*static float squareCoords[] = {
+    static float squareCoords[] = {
             -0.5f,  0.5f, 0.0f,   // top left
             -0.5f, -0.5f, 0.0f,   // bottom left
              0.5f, -0.5f, 0.0f,   // bottom right
-             0.5f,  0.5f, 0.0f }; // top right*/
-    
-    private float squareCoords[] = {
-            -0.5f, -0.5f, -0.5f,
-            0.5f, -0.5f, -0.5f,
-            0.5f,  0.5f, -0.5f,
-            -0.5f, 0.5f, -0.5f,
-            -0.5f, -0.5f,  0.5f,
-            0.5f, -0.5f,  0.5f,
-            0.5f,  0.5f,  0.5f,
-            -0.5f,  0.5f,  0.5f
-            };
-    
-    
+             0.5f,  0.5f, 0.0f }; // top right
 
-    /*private final short drawOrder[] = { 0, 1, 2, 0, 2, 3 }; // order to draw vertices*/
+    private final short drawOrder[] = { 0, 1, 2, 0, 2, 3 }; // order to draw vertices
 
-    private short drawOrder[] = {
-            0, 4, 5, 0, 5, 1,
-            1, 5, 6, 1, 6, 2,
-            2, 6, 7, 2, 7, 3,
-            3, 7, 4, 3, 4, 0,
-            4, 7, 6, 4, 6, 5,
-            3, 0, 1, 3, 1, 2
-            };
-    
     private final int vertexStride = COORDS_PER_VERTEX * 4; // 4 bytes per vertex
 
-    //[r, g, b, alpha];
-    float color[] = { 1.0f, 0.0f, 0.0f, 1.0f };
-    
-    
+    float color[] = { 0.2f, 0.709803922f, 0.898039216f, 1.0f };
 
     /**
      * Sets up the drawing object data for use in an OpenGL ES context.
      */
-    public Cube() {
+    public Square() {
         // initialize vertex byte buffer for shape coordinates
         ByteBuffer bb = ByteBuffer.allocateDirect(
         // (# of coordinate values * 4 bytes per float)
@@ -115,10 +90,10 @@ public class Cube {
         drawListBuffer.position(0);
 
         // prepare shaders and OpenGL program
-        int vertexShader = MyRenderer.loadShader(
+        int vertexShader = MyGLRenderer.loadShader(
                 GLES20.GL_VERTEX_SHADER,
                 vertexShaderCode);
-        int fragmentShader = MyRenderer.loadShader(
+        int fragmentShader = MyGLRenderer.loadShader(
                 GLES20.GL_FRAGMENT_SHADER,
                 fragmentShaderCode);
 
@@ -158,11 +133,11 @@ public class Cube {
 
         // get handle to shape's transformation matrix
         mMVPMatrixHandle = GLES20.glGetUniformLocation(mProgram, "uMVPMatrix");
-        MyRenderer.checkGlError("glGetUniformLocation");
+        MyGLRenderer.checkGlError("glGetUniformLocation");
 
         // Apply the projection and view transformation
         GLES20.glUniformMatrix4fv(mMVPMatrixHandle, 1, false, mvpMatrix, 0);
-        MyRenderer.checkGlError("glUniformMatrix4fv");
+        MyGLRenderer.checkGlError("glUniformMatrix4fv");
 
         // Draw the square
         GLES20.glDrawElements(

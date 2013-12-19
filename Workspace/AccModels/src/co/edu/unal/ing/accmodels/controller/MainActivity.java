@@ -1,6 +1,7 @@
 package co.edu.unal.ing.accmodels.controller;
 
 import android.app.Activity;
+import android.content.Intent;
 import android.hardware.Sensor;
 import android.hardware.SensorManager;
 import android.opengl.GLSurfaceView;
@@ -41,6 +42,8 @@ public class MainActivity extends Activity {
 		sensorManager.registerListener(new MySensorEventListener(this), 
 				sensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER),
 				SensorManager.SENSOR_DELAY_NORMAL);
+		
+		startUpdateService();
 	}
 
 	public void update(float readData[]){
@@ -51,19 +54,31 @@ public class MainActivity extends Activity {
 		else
 			filteredData = rawData;
 		
-		updateGUI();
+		renderer.setViewPoint(filteredData);
+		//updateGUI();
 	}
 	
-	private void updateGUI(){
-		renderer.setViewPoint(filteredData);
+	public void updateGUI(){
+		openGLView.requestRender();
 	}
 	
 	private void putOpenGLView(){
-		openGLView = new GLSurfaceView(this);
 		renderer = new MyRenderer();
+		
+		openGLView = new GLSurfaceView(this);
+		openGLView.setEGLContextClientVersion(2);
+		openGLView.setEGLConfigChooser(8 , 8, 8, 8, 16, 0);
 		openGLView.setRenderer(renderer);
+		openGLView.setRenderMode(GLSurfaceView.RENDERMODE_WHEN_DIRTY);
 		
 		setContentView(openGLView);
+		//openGLView.requestRender();
+	}
+	
+	private void startUpdateService(){
+		GUIUpdateService.setMainActivity(this);
+		Intent intent = new Intent(this, GUIUpdateService.class);
+		startService(intent);
 	}
 	
 	public GLSurfaceView getOpenGLView(){
