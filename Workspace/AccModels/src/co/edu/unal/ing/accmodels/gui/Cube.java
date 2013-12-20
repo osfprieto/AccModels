@@ -61,7 +61,7 @@ public class Cube {
              0.5f, -0.5f, 0.0f,   // bottom right
              0.5f,  0.5f, 0.0f }; // top right*/
     
-    private float squareCoords[] = {
+    private float cubeCoords[] = {
             -0.5f, -0.5f, -0.5f,
             0.5f, -0.5f, -0.5f,
             0.5f,  0.5f, -0.5f,
@@ -88,7 +88,8 @@ public class Cube {
     private final int vertexStride = COORDS_PER_VERTEX * 4; // 4 bytes per vertex
 
     //[r, g, b, alpha];
-    float color[] = { 1.0f, 0.0f, 0.0f, 1.0f };
+    float color[] = {0.5f, 0.5f, 0.5f, 1.0f};
+    //float colorLines[] = {0.0f, 0.0f, 0.0f, 1.0f};
     
     
 
@@ -99,10 +100,10 @@ public class Cube {
         // initialize vertex byte buffer for shape coordinates
         ByteBuffer bb = ByteBuffer.allocateDirect(
         // (# of coordinate values * 4 bytes per float)
-                squareCoords.length * 4);
+                cubeCoords.length * 4);
         bb.order(ByteOrder.nativeOrder());
         vertexBuffer = bb.asFloatBuffer();
-        vertexBuffer.put(squareCoords);
+        vertexBuffer.put(cubeCoords);
         vertexBuffer.position(0);
 
         // initialize byte buffer for the draw list
@@ -168,6 +169,11 @@ public class Cube {
         GLES20.glDrawElements(
                 GLES20.GL_TRIANGLES, drawOrder.length,
                 GLES20.GL_UNSIGNED_SHORT, drawListBuffer);
+        
+        // Draw the lines
+
+        //GLES20.glUniform4fv(mColorHandle, 1, colorLines, 0);
+        
 
         // Disable vertex array
         GLES20.glDisableVertexAttribArray(mPositionHandle);

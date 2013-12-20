@@ -29,8 +29,9 @@ public class MyRenderer implements GLSurfaceView.Renderer {
     private static final float DISTANCE_FACTOR = -5.0f;
     
     
-    private Cube   mSquare;
-    private float viewPoint[] = {3, 3, 3};
+    private Cube   cube;
+    private CubeLines cubeLines;
+    private float viewPoint[] = {1, 2, 3};
     
     // mMVPMatrix is an abbreviation for "Model View Projection Matrix"
     private final float[] mMVPMatrix = new float[16];
@@ -44,10 +45,10 @@ public class MyRenderer implements GLSurfaceView.Renderer {
     public void onSurfaceCreated(GL10 unused, EGLConfig config) {
 
         // Set the background frame color
-        GLES20.glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
+        GLES20.glClearColor(1.0f, 1.0f, 1.0f, 1.0f);
         
-        //mTriangle = new Triangle();
-        mSquare   = new Cube();
+        cube   = new Cube();
+        cubeLines = new CubeLines();
     }
 
     @Override
@@ -64,7 +65,8 @@ public class MyRenderer implements GLSurfaceView.Renderer {
         Matrix.multiplyMM(mMVPMatrix, 0, mProjectionMatrix, 0, mViewMatrix, 0);
 
         // Draw square
-        mSquare.draw(mMVPMatrix);
+        cube.draw(mMVPMatrix);
+        cubeLines.draw(mMVPMatrix);
 
        //Log.v("OSFPRIETO", "Redraw");
     }
