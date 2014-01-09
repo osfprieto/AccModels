@@ -5,7 +5,8 @@ import android.content.Intent;
 
 public class GUIUpdateService extends IntentService{
 
-	private static final long SLEEP_TIME = 2;
+	//Millis
+	public static final long SLEEP_TIME = 2;
 	
 	private static MainActivity caller;
 	

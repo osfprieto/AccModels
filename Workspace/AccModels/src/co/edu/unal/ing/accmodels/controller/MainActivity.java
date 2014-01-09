@@ -50,7 +50,7 @@ public class MainActivity extends Activity {
 		rawData = readData;
 		
 		if(useFilteredData)
-			filteredData = kalman.filter(rawData);
+			filteredData = kalman.filtrar(rawData);
 		else
 			filteredData = rawData;
 		
