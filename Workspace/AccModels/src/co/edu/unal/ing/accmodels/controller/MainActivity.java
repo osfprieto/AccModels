@@ -15,6 +15,7 @@ import android.widget.Toast;
 import co.edu.unal.ing.accmodels.R;
 import co.edu.unal.ing.accmodels.data_processing.Kalman;
 import co.edu.unal.ing.accmodels.gui.MyRenderer;
+import co.edu.unal.ing.accmodels.gui.PlotUpdater;
 
 public class MainActivity extends Activity {
 	
@@ -28,6 +29,7 @@ public class MainActivity extends Activity {
 	private Kalman kalman;
 	
 	private Intent updatingService;
+	private PlotUpdater plotUpdater;
 	
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -38,6 +40,7 @@ public class MainActivity extends Activity {
 			     WindowManager.LayoutParams.FLAG_FULLSCREEN);
 		
 		useFilteredData = true;
+		
 		try {
 			kalman = new Kalman();
 		} catch (Exception e) {
@@ -54,12 +57,15 @@ public class MainActivity extends Activity {
 
 	public void update(float readData[]){
 		rawData = readData;
+		VectorController.normalizeVector(rawData);
+		VectorController.applyFactor(rawData);
 		
 		if(useFilteredData)
 			filteredData = kalman.filtrar(rawData);
 		else
 			filteredData = rawData;
 		
+		plotUpdater.updatePlots(rawData, filteredData);
 		renderer.setViewPoint(filteredData);
 		//updateGUI();
 	}
@@ -91,6 +97,8 @@ public class MainActivity extends Activity {
 				putOpenGLView();
 			}
 		});
+		
+		plotUpdater = new PlotUpdater(this);
 	}
 	
 	private void putOpenGLView(){

@@ -26,8 +26,6 @@ import android.util.Log;
 public class MyRenderer implements GLSurfaceView.Renderer {
 
     private static final String TAG = "MyGLRenderer";
-    private static final float DISTANCE_FACTOR = -5.0f;
-    
     
     private Cube   cube;
     private CubeLines cubeLines;
@@ -90,34 +88,9 @@ public class MyRenderer implements GLSurfaceView.Renderer {
     public void setViewPoint(float viewPoint[]){
     	
     	this.viewPoint[0] = viewPoint[0];
-    	this.viewPoint[1] = viewPoint[1];
+    	this.viewPoint[1] = -viewPoint[1];
     	this.viewPoint[2] = viewPoint[2];
-    	normalizeVector();
-    	applyFactor();
     	//Log.v("OSFPRIETO", Arrays.toString(this.viewPoint));
-    }
-    
-    private void normalizeVector(){
-    	float length = norma();
-    	viewPoint[0] /= length;
-    	viewPoint[1] /= length;
-    	viewPoint[2] /= length;
-    }
-    
-    private float norma(){
-    	float ret = 0;
-    	
-    	ret += viewPoint[0]*viewPoint[0];
-    	ret += viewPoint[1]*viewPoint[1];
-    	ret += viewPoint[2]*viewPoint[2];
-    	
-    	return (float) Math.sqrt(ret);
-    }
-    
-    private void applyFactor(){
-    	viewPoint[0] *= DISTANCE_FACTOR;
-    	viewPoint[1] *= -DISTANCE_FACTOR;
-    	viewPoint[2] *= DISTANCE_FACTOR;
     }
     
     public static int loadShader(int type, String shaderCode){
