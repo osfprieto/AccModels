@@ -27,8 +27,12 @@ public class PlotUpdater {
 		plots[2] = (XYPlot) caller.findViewById(R.id.plotZ);
 		
 		for(int i=0;i<3;i++){
-			plots[i].setRangeBoundaries(0, VectorController.DISTANCE_FACTOR, BoundaryMode.FIXED);
-			plots[i].setDomainBoundaries(0, MAX_HISTORY, BoundaryMode.FIXED);
+			plots[i].setRangeBoundaries(-VectorController.DISTANCE_FACTOR,
+					VectorController.DISTANCE_FACTOR,
+					BoundaryMode.FIXED);
+			plots[i].setDomainBoundaries(0,
+					MAX_HISTORY,
+					BoundaryMode.FIXED);
 		}
 		
 		series[0][0] = new SimpleXYSeries("X Raw");
@@ -47,9 +51,9 @@ public class PlotUpdater {
 		series[2][1].useImplicitXVals();
 		
 		LineAndPointFormatter formatter0 = new LineAndPointFormatter(
-				Color.RED, Color.BLACK, null, null);
-		LineAndPointFormatter formatter1 = new LineAndPointFormatter(
 				Color.BLUE, Color.BLACK, null, null);
+		LineAndPointFormatter formatter1 = new LineAndPointFormatter(
+				Color.RED, Color.BLACK, null, null);
 		
 		for(int i=0;i<3;i++){
 			plots[i].addSeries(series[i][0], formatter0);
