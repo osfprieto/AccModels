@@ -6,8 +6,13 @@ import android.hardware.Sensor;
 import android.hardware.SensorManager;
 import android.opengl.GLSurfaceView;
 import android.os.Bundle;
+import android.view.View;
+import android.view.View.OnClickListener;
 import android.view.Window;
 import android.view.WindowManager;
+import android.widget.Button;
+import android.widget.Toast;
+import co.edu.unal.ing.accmodels.R;
 import co.edu.unal.ing.accmodels.data_processing.Kalman;
 import co.edu.unal.ing.accmodels.gui.MyRenderer;
 
@@ -22,8 +27,11 @@ public class MainActivity extends Activity {
 	private boolean useFilteredData;
 	private Kalman kalman;
 	
+	private Intent updatingService;
+	
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
+		
 		super.onCreate(savedInstanceState);
 		requestWindowFeature(Window.FEATURE_NO_TITLE);
 		getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN,
@@ -36,14 +44,12 @@ public class MainActivity extends Activity {
 			useFilteredData = false;
 		}
 		
-		putOpenGLView();
+		putPlotView();
 		
 		sensorManager = (SensorManager) getSystemService(SENSOR_SERVICE);
 		sensorManager.registerListener(new MySensorEventListener(this), 
 				sensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER),
 				SensorManager.SENSOR_DELAY_NORMAL);
-		
-		startUpdateService();
 	}
 
 	public void update(float readData[]){
@@ -62,7 +68,7 @@ public class MainActivity extends Activity {
 		openGLView.requestRender();
 	}
 	
-	private void putOpenGLView(){
+	private void putPlotView(){
 		renderer = new MyRenderer();
 		
 		openGLView = new GLSurfaceView(this);
@@ -70,15 +76,41 @@ public class MainActivity extends Activity {
 		openGLView.setEGLConfigChooser(8 , 8, 8, 8, 16, 0);
 		openGLView.setRenderer(renderer);
 		openGLView.setRenderMode(GLSurfaceView.RENDERMODE_WHEN_DIRTY);
+		openGLView.setOnClickListener(new OnClickListener(){
+			public void onClick(View v) {
+				putPlotView();
+			}
+		});
 		
+		setContentView(R.layout.plotlayout);
+		
+		Button button = (Button) findViewById(R.id.buttonViewCube);
+		
+		button.setOnClickListener(new OnClickListener(){
+			public void onClick(View arg0) {
+				putOpenGLView();
+			}
+		});
+	}
+	
+	private void putOpenGLView(){
 		setContentView(openGLView);
-		//openGLView.requestRender();
+		
+		CharSequence text = getString(R.string.tapToClose);
+		int duration = Toast.LENGTH_SHORT;
+		Toast toast = Toast.makeText(this, text, duration);
+		toast.show();
+		
+		startUpdateService();
 	}
 	
 	private void startUpdateService(){
+		if(updatingService!=null)
+			stopService(updatingService);
+		
 		GUIUpdateService.setMainActivity(this);
-		Intent intent = new Intent(this, GUIUpdateService.class);
-		startService(intent);
+		updatingService = new Intent(this, GUIUpdateService.class);
+		startService(updatingService);
 	}
 	
 	public GLSurfaceView getOpenGLView(){

@@ -3,5 +3,10 @@
 
     <string name="app_name">AccModels</string>
     <string name="action_settings">Settings</string>
+    <string name="viewCube">Ver cubo</string>
+    <string name="plotXString">Plot for X</string>
+    <string name="plotYString">Plot for Y</string>
+    <string name="plotZString">Plot for Z</string>
+    <string name="tapToClose">Toca la pantalla para volver</string>
 
 </resources>
