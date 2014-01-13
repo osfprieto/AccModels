@@ -1,25 +1,19 @@
 package co.edu.unal.ing.accmodels.data_processing;
 
-import co.edu.unal.ing.accmodels.controller.GUIUpdateService;
-
+import co.edu.unal.ing.accmodels.controller.VectorController;
 
 public class Kalman {
 	
-	public static float STARTING_ANGLE[] = {0, 0, 90};
 	
 	private Filtro filtros[];
-	private float deltaTiempo;
 	
 	public Kalman(){
 		
 		filtros = new Filtro[3];
 		
 		for(int i=0;i<filtros.length;i++){
-			filtros[i] = new Filtro();
-			filtros[i].setAngle(STARTING_ANGLE[i]);
+			filtros[i] = Filtro.inicializarFiltro();
 		}
-		
-		deltaTiempo = (float) ((float)GUIUpdateService.SLEEP_TIME)/1000f;
 		
 	}
 	
@@ -27,125 +21,119 @@ public class Kalman {
 		
 		//Process the input
 		
+		float ret[] = new float[3];
 		
+		for(int i=0;i<3;i++){
+			ret[i] = filtros[i].getCurrentState()[0][0];
+			
+			float controlVector[][] = new float[1][1];
+			controlVector[0][0] = 0;
+			
+			float measurementVector[][] = new float[1][1];
+			measurementVector[0][0] = input[i];
+			
+			filtros[i].step(controlVector, measurementVector);
+		}
 		
-		return input;
+		return ret;
 	}
 	
-	public class Filtro{
-		/* Kalman filter variables */
-	    private float qAngle; // Process noise variance for the accelerometer
-	    private float qBias; // Process noise variance for the gyro bias
-	    private float rMeasure; // Measurement noise variance - this is actually the variance of the measurement noise
-
-	    private float angle; // The angle calculated by the Kalman filter - part of the 2x1 state vector
-	    private float bias; // The gyro bias calculated by the Kalman filter - part of the 2x1 state vector
-	    private float rate; // Unbiased rate calculated from the rate and the calculated bias - you have to call getAngle to update the rate
-
-	    private float p[][]; // Error covariance matrix - This is a 2x2 matrix
-	    private float k[]; // Kalman gain - This is a 2x1 vector
-	    private float y; // Angle difference
-	    private float s; // Estimate error
+	public static class Filtro{
 		
-	    public Filtro() {
-	        /* We will set the variables like so, these can also be tuned by the user */
-	    	
-	        qAngle = 0.001f;
-	        qBias = 0.003f;
-	        rMeasure = 0.03f;
-
-	        angle = 0; // Reset the angle
-	        bias = 0; // Reset bias
-	        
-	        //Since we assume that the bias is 0 and we know the starting angle
-	        //(use setAngle), the error covariance matrix is set like so - see:
-	        //http://en.wikipedia.org/wiki/Kalman_filter#Example_application.2C_technical
-	        p[0][0] = 0; 
-	        p[0][1] = 0;
-	        p[1][0] = 0;
-	        p[1][1] = 0;
-	    }
-	    
-	    // The angle should be in degrees and the rate should be in degrees
-	    //per second and the delta time in seconds
-	    
-	    public float getAngle(float newAngle, float newRate, float dt) {
-	    	
-	        // Discrete Kalman filter time update equations - Time Update ("Predict")
-	        // Update xhat - Project the state ahead
-	        /* Step 1 */
-	    	
-	        rate = newRate - bias;
-	        angle += dt * rate;
-
-	        // Update estimation error covariance - Project the error covariance ahead
-	        /* Step 2 */
-	        
-	        p[0][0] += dt * (dt*p[1][1] - p[0][1] - p[1][0] + qAngle);
-	        p[0][1] -= dt * p[1][1];
-	        p[1][0] -= dt * p[1][1];
-	        p[1][1] += qBias * dt;
-
-	        // Discrete Kalman filter measurement update equations - Measurement Update ("Correct")
-	        // Calculate Kalman gain - Compute the Kalman gain
-	        /* Step 4 */
-	        
-	        s = p[0][0] + rMeasure;
-	        
-	        /* Step 5 */
-	        
-	        k[0] = p[0][0] / s;
-	        k[1] = p[1][0] / s;
-
-	        // Calculate angle and bias - Update estimate with measurement zk (newAngle)
-	        /* Step 3 */
-	        
-	        y = newAngle - angle;
-	        
-	        /* Step 6 */
-	        
-	        angle += k[0] * y;
-	        bias += k[1] * y;
-
-	        // Calculate estimation error covariance - Update the error covariance
-	        /* Step 7 */
-	        p[0][0] -= k[0] * p[0][0];
-	        p[0][1] -= k[0] * p[0][1];
-	        p[1][0] -= k[1] * p[0][0];
-	        p[1][1] -= k[1] * p[0][1];
-
-	        return angle;
-	    }
-	    
-	    // Used to set angle, this should be set as the starting angle
-	    public void setAngle(float newAngle){
-	    	angle = newAngle;
-	    }
-	    
-	    public float getRate(){
-	    	return rate;
-	    } // Return the unbiased rate
-
-	    /* These are used to tune the Kalman filter */
-	    public void setQangle(float newQ_angle){
-	    	qAngle = newQ_angle;
-	    }
-	    public void setQbias(float newQ_bias){
-	    	qBias = newQ_bias;
-	    }
-	    public void setRmeasure(float newR_measure){
-	    	rMeasure = newR_measure;
-	    }
-
-	    public double getQangle(){
-	    	return qAngle;
-	    }
-	    public double getQbias(){
-	    	return qBias;
-	    }
-	    public double getRmeasure(){
-	    	return rMeasure;
-	    }
+		private float A[][];						//State transition matrix.
+	    private float B[][];						//Control matrix.
+	    private float H[][];						//Observation matrix.
+	    private float currentStateEstimate[][];		//Initial state estimate.
+	    private float currentProbEstimate[][]; 		//Initial covariance estimate.
+	    private float Q[][];						//Estimated error in process.
+	    private float R[][];						//Estimated error in measurements.
 		
+	    public static Filtro inicializarFiltro(){
+	    	
+	    	float A[][] = new float[1][1];
+	    	A[0][0] = 1f;
+	    	
+	    	float B[][] = new float[1][1];
+	    	B[0][0] = 0f;
+	    	
+	    	float H[][] = new float[1][1];
+	    	H[0][0] = 1f;
+	    	
+	    	float currentStateEstimate[][] = new float[1][1];
+	    	currentStateEstimate[0][0] = 0f;
+	    	
+	    	float currentProbEstimate[][] = new float[1][1];
+	    	currentProbEstimate[0][0] = 1f;
+	    	
+	    	float Q[][] = new float[1][1];
+	    	Q[0][0] = 0.001f;
+	    	
+	    	float R[][] = new float[1][1];
+	    	R[0][0] = 0.1f;
+	    	
+	    	return new Filtro(A, B, H, currentStateEstimate, currentProbEstimate, Q, R);
+	    }
+	    
+	    public Filtro(float A[][], float B[][], float H[][],
+	    		float currentStateEstimate[][], float currentProbEstimate[][],
+	    		float Q[][], float R[][]){
+	    	this.A = A;
+	    	this.B = B;
+	    	this.H = H;
+	    	this.currentStateEstimate = currentStateEstimate;
+	    	this.currentProbEstimate = currentProbEstimate;
+	    	this.Q = Q;
+	    	this.R = R;
+	    }
+	    
+	    public float[][] getCurrentState(){
+	        return currentStateEstimate;
+	    }
+	    
+	    public void  step(float controlVector[][], float measurementVector[][]){
+	        //---------------------------Prediction step-----------------------------
+	    	//predicted_state_estimate = A * current_state_estimate + B * control_vector
+	    	float predictedStateEstimate[][] = VectorController.addMatrixes(
+	        		VectorController.multiplyMatrixes(A, currentStateEstimate),
+	        		VectorController.multiplyMatrixes(B, controlVector));
+	        
+	        //predicted_prob_estimate = (A * current_prob_estimate) * transpose(A) + Q
+	        float predictedProbEstimate[][] = VectorController.addMatrixes(
+	        		VectorController.multiplyMatrixes(
+	        				VectorController.multiplyMatrixes(A, currentProbEstimate),
+	        				VectorController.transponse(A)), Q);
+	        		
+	        //--------------------------Observation step-----------------------------
+	        //innovation = measurement_vector - H*predicted_state_estimate
+	        float innovation[][] = VectorController.addMatrixes(measurementVector, VectorController.scalar(-1, 
+	        		VectorController.multiplyMatrixes(H, predictedStateEstimate)));
+	        
+	        //innovation_covariance = (H*predicted_prob_estimate)*transpose(H) + R
+	        float innovationCovariance[][] = VectorController.addMatrixes(
+	        		VectorController.multiplyMatrixes(
+	        				VectorController.multiplyMatrixes(H, predictedProbEstimate),
+	        				VectorController.transponse(H)), R);
+	        
+	        //-----------------------------Update step-------------------------------
+	        //kalman_gain = predicted_prob_estimate * transpose(H) * inv(innovation_covariance)
+	        float kalmanGain[][] = VectorController.multiplyMatrixes(
+	        		VectorController.multiplyMatrixes(predictedProbEstimate,
+	        				VectorController.transponse(H)),
+	        				VectorController.inverse(innovationCovariance));
+	        
+	        //current_state_estimate = predicted_state_estimate + kalman_gain * innovation
+	        currentStateEstimate = VectorController.addMatrixes(predictedStateEstimate,
+	        		VectorController.multiplyMatrixes(kalmanGain, innovation));
+	        
+	        // We need the size of the matrix so we can make an identity matrix.
+	        int size = currentProbEstimate.length;
+	        
+	        //current_prob_estimate = (identity(size)-kalman_gain*self)*predicted_prob_estimate
+	        currentProbEstimate = VectorController.multiplyMatrixes(
+	        		VectorController.addMatrixes(
+	        				VectorController.identity(size), 
+	        				VectorController.scalar(-1,	VectorController.multiplyMatrixes(kalmanGain, H))),
+	        		predictedProbEstimate);
+	    }
 	}
 }
