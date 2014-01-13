@@ -88,7 +88,7 @@ public class MyRenderer implements GLSurfaceView.Renderer {
     public void setViewPoint(float viewPoint[]){
     	
     	this.viewPoint[0] = viewPoint[0];
-    	this.viewPoint[1] = -viewPoint[1];
+    	this.viewPoint[1] = viewPoint[1];
     	this.viewPoint[2] = viewPoint[2];
     	//Log.v("OSFPRIETO", Arrays.toString(this.viewPoint));
     }

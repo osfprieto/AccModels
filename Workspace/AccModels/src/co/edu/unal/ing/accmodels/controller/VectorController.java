@@ -2,7 +2,7 @@ package co.edu.unal.ing.accmodels.controller;
 
 public class VectorController {
 
-	public static final float DISTANCE_FACTOR = -5.0f;
+	public static final float DISTANCE_FACTOR = 5.0f;
 	
 	public static void normalizeVector(float input[]){
     	float length = norm(input);

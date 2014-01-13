@@ -65,6 +65,9 @@ public class MainActivity extends Activity {
 		else
 			filteredData = rawData;
 		
+		VectorController.normalizeVector(filteredData);
+		VectorController.applyFactor(filteredData);
+		
 		plotUpdater.updatePlots(rawData, filteredData);
 		renderer.setViewPoint(filteredData);
 		//updateGUI();
