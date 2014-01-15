@@ -35,19 +35,19 @@ public class PlotUpdater {
 					BoundaryMode.FIXED);
 		}
 		
-		series[0][0] = new SimpleXYSeries("X Raw");
+		series[0][0] = new SimpleXYSeries(caller.getString(R.string.xRaw));
 		series[0][0].useImplicitXVals();
-		series[0][1] = new SimpleXYSeries("X Filtered");
+		series[0][1] = new SimpleXYSeries(caller.getString(R.string.xFiltered));
 		series[0][1].useImplicitXVals();
 		
-		series[1][0] = new SimpleXYSeries("Y Raw");
+		series[1][0] = new SimpleXYSeries(caller.getString(R.string.yRaw));
 		series[1][0].useImplicitXVals();
-		series[1][1] = new SimpleXYSeries("Y Filtered");
+		series[1][1] = new SimpleXYSeries(caller.getString(R.string.yFiltered));
 		series[1][1].useImplicitXVals();
 		
-		series[2][0] = new SimpleXYSeries("Z Raw");
+		series[2][0] = new SimpleXYSeries(caller.getString(R.string.zRaw));
 		series[2][0].useImplicitXVals();
-		series[2][1] = new SimpleXYSeries("Z Filtered");
+		series[2][1] = new SimpleXYSeries(caller.getString(R.string.zFiltered));
 		series[2][1].useImplicitXVals();
 		
 		LineAndPointFormatter formatter0 = new LineAndPointFormatter(

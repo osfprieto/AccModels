@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <string name="app_name">AccModels</string>
+    <string name="action_settings">Configuración</string>
+    <string name="viewCube">Ver cubo</string>
+    <string name="plotXString">Gráfica de X</string>
+    <string name="plotYString">Gráfica de Y</string>
+    <string name="plotZString">Gráfica de Z</string>
+    <string name="xRaw">X medido</string>
+    <string name="xFiltered">X filtrado</string>
+    <string name="yRaw">Y medido</string>
+    <string name="yFiltered">Y filtrado</string>
+    <string name="zRaw">Z medido</string>
+    <string name="zFiltered">Z filtrado</string>
+    <string name="tapToClose">Toca la pantalla para volver</string>
+
+</resources>

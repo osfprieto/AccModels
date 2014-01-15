@@ -42,8 +42,14 @@ public final class R {
         public static final int plotXString=0x7f050003;
         public static final int plotYString=0x7f050004;
         public static final int plotZString=0x7f050005;
-        public static final int tapToClose=0x7f050006;
+        public static final int tapToClose=0x7f05000c;
         public static final int viewCube=0x7f050002;
+        public static final int xFiltered=0x7f050007;
+        public static final int xRaw=0x7f050006;
+        public static final int yFiltered=0x7f050009;
+        public static final int yRaw=0x7f050008;
+        public static final int zFiltered=0x7f05000b;
+        public static final int zRaw=0x7f05000a;
     }
     public static final class style {
         /** 

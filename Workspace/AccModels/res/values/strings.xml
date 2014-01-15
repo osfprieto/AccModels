@@ -3,10 +3,16 @@
 
     <string name="app_name">AccModels</string>
     <string name="action_settings">Settings</string>
-    <string name="viewCube">Ver cubo</string>
+    <string name="viewCube">View cube</string>
     <string name="plotXString">Plot for X</string>
     <string name="plotYString">Plot for Y</string>
     <string name="plotZString">Plot for Z</string>
-    <string name="tapToClose">Toca la pantalla para volver</string>
+    <string name="xRaw">X raw</string>
+    <string name="xFiltered">X filtered</string>
+    <string name="yRaw">Y raw</string>
+    <string name="yFiltered">Y filtered</string>
+    <string name="zRaw">Z raw</string>
+    <string name="zFiltered">Z filtered</string>
+    <string name="tapToClose">Tap the screen to go back</string>
 
 </resources>
