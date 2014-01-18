@@ -43,6 +43,11 @@ public class MainActivity extends Activity {
 		getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN,
 			     WindowManager.LayoutParams.FLAG_FULLSCREEN);
 		
+		rawData = new float[3];
+		rawData[0] = 0;
+		rawData[1] = 0;
+		rawData[2] = 5;
+		
 		try {
 			kalman = Kalman.inicializarFiltro();
 		} catch (Exception e) {
