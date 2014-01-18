@@ -14,5 +14,7 @@
     <string name="zRaw">Z raw</string>
     <string name="zFiltered">Z filtered</string>
     <string name="tapToClose">Tap the screen to go back</string>
+    <string name="setColor">Set Color</string>
+    <string name="useFilteredData">Use filtered data</string>
 
 </resources>

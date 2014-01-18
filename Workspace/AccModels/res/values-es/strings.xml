@@ -14,5 +14,6 @@
     <string name="zRaw">Z medido</string>
     <string name="zFiltered">Z filtrado</string>
     <string name="tapToClose">Toca la pantalla para volver</string>
+    <string name="useFilteredData">Usar datos filtrados</string>
 
 </resources>

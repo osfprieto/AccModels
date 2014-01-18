@@ -11,8 +11,12 @@ import com.androidplot.xy.SimpleXYSeries;
 import com.androidplot.xy.XYPlot;
 
 public class PlotUpdater {
-
+	
 	public static final int MAX_HISTORY = 20;
+	
+	private static int colorRaw = Color.BLUE;
+	private static int colorFiltered = Color.RED;
+	
 						//3x2
 	SimpleXYSeries series[][];
 	XYPlot plots[];
@@ -51,9 +55,9 @@ public class PlotUpdater {
 		series[2][1].useImplicitXVals();
 		
 		LineAndPointFormatter formatter0 = new LineAndPointFormatter(
-				Color.BLUE, Color.BLACK, null, null);
+				colorRaw, Color.BLACK, null, null);
 		LineAndPointFormatter formatter1 = new LineAndPointFormatter(
-				Color.RED, Color.BLACK, null, null);
+				colorFiltered, Color.BLACK, null, null);
 		
 		for(int i=0;i<3;i++){
 			plots[i].addSeries(series[i][0], formatter0);
@@ -75,6 +79,14 @@ public class PlotUpdater {
 			plots[i].redraw();
 		}
 		
+	}
+	
+	public static void setColorRaw(int color){
+		colorRaw = color;
+	}
+	
+	public static void setColorFiltered(int color){
+		colorFiltered = color;
 	}
 	
 }

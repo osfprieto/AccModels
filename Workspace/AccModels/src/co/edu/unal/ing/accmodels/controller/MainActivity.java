@@ -6,6 +6,9 @@ import android.hardware.Sensor;
 import android.hardware.SensorManager;
 import android.opengl.GLSurfaceView;
 import android.os.Bundle;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.Window;
@@ -19,13 +22,14 @@ import co.edu.unal.ing.accmodels.gui.PlotUpdater;
 
 public class MainActivity extends Activity {
 	
+	private static boolean useFilteredData = true;
+	
 	private GLSurfaceView openGLView;
 	private MyRenderer renderer;
 
 	private SensorManager sensorManager;
 	private float rawData[];
 	private float filteredData[];
-	private boolean useFilteredData;
 	private Kalman kalman;
 	
 	private Intent updatingService;
@@ -39,10 +43,8 @@ public class MainActivity extends Activity {
 		getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN,
 			     WindowManager.LayoutParams.FLAG_FULLSCREEN);
 		
-		useFilteredData = true;
-		
 		try {
-			kalman = new Kalman();
+			kalman = Kalman.inicializarFiltro();
 		} catch (Exception e) {
 			useFilteredData = false;
 		}
@@ -53,27 +55,29 @@ public class MainActivity extends Activity {
 		sensorManager.registerListener(new MySensorEventListener(this), 
 				sensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER),
 				SensorManager.SENSOR_DELAY_NORMAL);
+		
+		startUpdateService();
 	}
 
 	public void update(float readData[]){
 		rawData = readData;
 		VectorController.normalizeVector(rawData);
 		VectorController.applyFactor(rawData);
+	}
+	
+	public void updateGUI(){
 		
-		if(useFilteredData)
-			filteredData = kalman.filtrar(rawData);
-		else
-			filteredData = rawData;
-		
+		filteredData = kalman.filtrar(rawData);
 		VectorController.normalizeVector(filteredData);
 		VectorController.applyFactor(filteredData);
 		
 		plotUpdater.updatePlots(rawData, filteredData);
-		renderer.setViewPoint(filteredData);
-		//updateGUI();
-	}
-	
-	public void updateGUI(){
+		
+		if(useFilteredData)
+			renderer.setViewPoint(filteredData);
+		else
+			renderer.setViewPoint(rawData);
+		
 		openGLView.requestRender();
 	}
 	
@@ -130,4 +134,37 @@ public class MainActivity extends Activity {
 	public MyRenderer getMyRenderer(){
 		return renderer;
 	}
+	
+	@Override
+	public boolean onCreateOptionsMenu(Menu menu) {
+	    MenuInflater inflater = getMenuInflater();
+	    inflater.inflate(R.menu.main, menu);
+	    return true;
+	}
+	
+	@Override
+	public boolean onOptionsItemSelected(MenuItem item) {
+	    // Handle item selection
+	    switch (item.getItemId()) {
+	        case R.id.action_settings:
+	            settings();
+	            return true;
+	        default:
+	            return super.onOptionsItemSelected(item);
+	    }
+	}
+	
+	public void settings(){
+		Intent intentSettings = new Intent(this, SettingsActivity.class);
+		startActivity(intentSettings);
+	}
+	
+	public static void setUseFileteredData(boolean useFileteredData){
+		MainActivity.useFilteredData = useFileteredData;
+	}
+	
+	public static boolean getUseFileteredData(){
+		return useFilteredData;
+	}
+	
 }

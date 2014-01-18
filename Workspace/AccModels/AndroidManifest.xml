@@ -26,6 +26,7 @@
             </intent-filter>
         </activity>
         <service android:name=".controller.GUIUpdateService"></service>
+        <activity android:name=".controller.SettingsActivity"></activity>
     </application>
 
 </manifest>
