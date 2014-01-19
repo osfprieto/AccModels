@@ -11,6 +11,7 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.View.OnClickListener;
+import android.view.View.OnLongClickListener;
 import android.view.Window;
 import android.view.WindowManager;
 import android.widget.Button;
@@ -23,6 +24,7 @@ import co.edu.unal.ing.accmodels.gui.PlotUpdater;
 public class MainActivity extends Activity {
 	
 	private static boolean useFilteredData = true;
+	private static int filterToUse = Kalman.TYPE_3D;
 	
 	private GLSurfaceView openGLView;
 	private MyRenderer renderer;
@@ -49,7 +51,7 @@ public class MainActivity extends Activity {
 		rawData[2] = 5;
 		
 		try {
-			kalman = Kalman.inicializarFiltro();
+			kalman = new Kalman();
 		} catch (Exception e) {
 			useFilteredData = false;
 		}
@@ -72,7 +74,7 @@ public class MainActivity extends Activity {
 	
 	public void updateGUI(){
 		
-		filteredData = kalman.filtrar(rawData);
+		filteredData = kalman.filtrar(rawData, filterToUse);
 		VectorController.normalizeVector(filteredData);
 		VectorController.applyFactor(filteredData);
 		
@@ -97,6 +99,12 @@ public class MainActivity extends Activity {
 		openGLView.setOnClickListener(new OnClickListener(){
 			public void onClick(View v) {
 				putPlotView();
+			}
+		});
+		openGLView.setOnLongClickListener(new OnLongClickListener() {
+			public boolean onLongClick(View view) {
+				settings();
+				return true;
 			}
 		});
 		
@@ -172,4 +180,11 @@ public class MainActivity extends Activity {
 		return useFilteredData;
 	}
 	
+	public static void setFilterToUse(int filterToUse){
+		MainActivity.filterToUse = filterToUse;
+	}
+	
+	public static int getFilterToUse(){
+		return filterToUse;
+	}
 }

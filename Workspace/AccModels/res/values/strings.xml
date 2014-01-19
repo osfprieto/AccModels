@@ -13,8 +13,12 @@
     <string name="yFiltered">Y filtered</string>
     <string name="zRaw">Z raw</string>
     <string name="zFiltered">Z filtered</string>
-    <string name="tapToClose">Tap the screen to go back</string>
+    <string name="tapToClose">Tap the screen to go back, hold to open settings</string>
     <string name="setColor">Set Color</string>
     <string name="useFilteredData">Use filtered data</string>
+    <string name="labelPlotCube">For plotting the cube</string>
+    <string name="modelToUse">Model to use</string>
+    <string name="use1DModel">Use 1D model</string>
+    <string name="use3DModel">Use 3D model</string>
 
 </resources>
