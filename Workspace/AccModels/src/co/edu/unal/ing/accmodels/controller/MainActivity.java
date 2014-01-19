@@ -74,7 +74,7 @@ public class MainActivity extends Activity {
 	
 	public void updateGUI(){
 		
-		filteredData = kalman.filtrar(rawData, filterToUse);
+		filteredData = kalman.filter(rawData, filterToUse);
 		VectorController.normalizeVector(filteredData);
 		VectorController.applyFactor(filteredData);
 		

@@ -8,18 +8,18 @@ public class Kalman {
 	public static final int TYPE_3D = 1;
 	
 	
-	Filtro filtro3D;
-	Filtro filtros1D[];
+	Filter filter3D;
+	Filter filters1D[];
 	
 	public Kalman(){
-		filtro3D = inicializarFiltro3D();
-		filtros1D = new Filtro[3];
-		for(int i=0;i<filtros1D.length;i++){
-			filtros1D[i] = inicializarFiltro1D();
+		filter3D = initialize3DFilter();
+		filters1D = new Filter[3];
+		for(int i=0;i<filters1D.length;i++){
+			filters1D[i] = initialize1DFilter();
 		}
 	}
 	
-	private static Filtro inicializarFiltro3D(){
+	private static Filter initialize3DFilter(){
 		
 		float dt = 1f;
 		float q = 0.01f;
@@ -31,9 +31,7 @@ public class Kalman {
 
 		float B[][] = VectorController.identity(3);
 		
-		float H[][] = {	{1, 0, 0},
-						{0, 1, 0},
-						{0, 0, 1}};
+		float H[][] = VectorController.identity(3);
 		
 		float currentStateEstimate[][] = {	{0},
 											{0},
@@ -48,10 +46,10 @@ public class Kalman {
 		
 		float R[][] = VectorController.scalar(r, VectorController.identity(3));
 
-		return new Filtro(A, B, H, currentStateEstimate, currentProbEstimate, Q, R);
+		return new Filter(A, B, H, currentStateEstimate, currentProbEstimate, Q, R);
 	}
 	
-	private static Filtro inicializarFiltro1D(){
+	private static Filter initialize1DFilter(){
 	    	
 		float q = 0.01f;
 		float r = 0.1f;
@@ -77,10 +75,10 @@ public class Kalman {
     	float R[][] = new float[1][1];
     	R[0][0] = r;
     	
-    	return new Filtro(A, B, H, currentStateEstimate, currentProbEstimate, Q, R);
+    	return new Filter(A, B, H, currentStateEstimate, currentProbEstimate, Q, R);
 	}
     
-    public float[] filtrar(float[] input, int filterToUse){
+    public float[] filter(float[] input, int filterToUse){
 		
 		//Process the input
 		
@@ -89,7 +87,7 @@ public class Kalman {
     	if(filterToUse == TYPE_3D){//Use 3D filter
 			
 			for(int i=0;i<3;i++)
-				ret[i] = filtro3D.getCurrentState()[i][0];
+				ret[i] = filter3D.getCurrentState()[i][0];
 			
 			
 			float controlVector[][] = {	{0},
@@ -100,12 +98,12 @@ public class Kalman {
 											{input[1]},
 											{input[2]}};
 		
-			filtro3D.step(controlVector, measurementVector);
+			filter3D.step(controlVector, measurementVector);
     	
     	}else if(filterToUse == TYPE_1D){//Use 1D filters
     		
     		for(int i=0;i<3;i++){
-    			ret[i] = filtros1D[i].getCurrentState()[0][0];
+    			ret[i] = filters1D[i].getCurrentState()[0][0];
     			
     			float controlVector[][] = new float[1][1];
     			controlVector[0][0] = 0;
@@ -113,7 +111,7 @@ public class Kalman {
     			float measurementVector[][] = new float[1][1];
     			measurementVector[0][0] = input[i];
     			
-    			filtros1D[i].step(controlVector, measurementVector);
+    			filters1D[i].step(controlVector, measurementVector);
     		}
     		
     	}
@@ -121,7 +119,7 @@ public class Kalman {
 		return ret;
 	}
     
-    public static class Filtro{
+    public static class Filter{
 		
 		private float A[][];						//State transition matrix.
 	    private float B[][];						//Control matrix.
@@ -133,7 +131,7 @@ public class Kalman {
 		
 	    
 	    
-	    public Filtro(float A[][], float B[][], float H[][],
+	    public Filter(float A[][], float B[][], float H[][],
 	    		float currentStateEstimate[][], float currentProbEstimate[][],
 	    		float Q[][], float R[][]){
 	    	this.A = A;
