@@ -19,6 +19,6 @@
     <string name="labelPlotCube">For plotting the cube</string>
     <string name="modelToUse">Model to use</string>
     <string name="use1DModel">Use 1D model</string>
-    <string name="use3DModel">Use 3D model</string>
+    <string name="use3DModel">Use 3D model - Weiner model</string>
 
 </resources>

@@ -18,6 +18,6 @@
     <string name="labelPlotCube">Para dibujar el cubo</string>
     <string name="modelToUse">Modelo a usar</string>
     <string name="use1DModel">Modelo 1D</string>
-    <string name="use3DModel">Modelo 3D</string>
+    <string name="use3DModel">Modelo 3D - Modelo Weiner</string>
 
 </resources>
