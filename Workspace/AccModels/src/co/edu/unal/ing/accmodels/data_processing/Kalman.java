@@ -4,26 +4,25 @@ import co.edu.unal.ing.accmodels.controller.VectorController;
 
 public class Kalman {
 	
+	private static final float q = 0.01f;
+	private static final float r = 0.1f;
+	
 	public static final int TYPE_1D = 0;
 	public static final int TYPE_3D = 1;
 	
-	
-	Filter filter3D;
-	Filter filters1D[];
+	private Filter filters[][];
 	
 	public Kalman(){
-		filter3D = initialize3DFilter();
-		filters1D = new Filter[3];
-		for(int i=0;i<filters1D.length;i++){
-			filters1D[i] = initialize1DFilter();
+		filters = new Filter[3][2];
+		for(int i=0;i<filters.length;i++){
+			filters[i][TYPE_1D] = initialize1DFilter();
+			filters[i][TYPE_3D] = initialize3DFilter();
 		}
 	}
 	
 	private static Filter initialize3DFilter(){
 		
 		float dt = 1f;
-		float q = 0.01f;
-		float r = 0.0002f;
 		
 		float A[][] = {	{1, dt, dt*dt/2},
 						{0,  1,    dt},
@@ -50,9 +49,6 @@ public class Kalman {
 	}
 	
 	private static Filter initialize1DFilter(){
-	    	
-		float q = 0.01f;
-		float r = 0.1f;
 		
     	float A[][] = new float[1][1];
     	A[0][0] = 1f;
@@ -86,24 +82,24 @@ public class Kalman {
     	
     	if(filterToUse == TYPE_3D){//Use 3D filter
 			
-			for(int i=0;i<3;i++)
-				ret[i] = filter3D.getCurrentState()[i][0];
-			
-			
-			float controlVector[][] = {	{0},
-										{0},
-										{0}};
-			
-			float measurementVector[][] = {	{input[0]},
-											{input[1]},
-											{input[2]}};
-		
-			filter3D.step(controlVector, measurementVector);
+			for(int i=0;i<3;i++){
+    			ret[i] = filters[i][TYPE_3D].getCurrentState()[2][0];
+    			
+    			float controlVector[][] = {	{0},
+											{0},
+											{0}};
+
+    			float measurementVector[][] = {	{0},
+												{0},
+												{input[i]}};
+    			
+    			filters[i][TYPE_3D].step(controlVector, measurementVector);
+    		}
     	
     	}else if(filterToUse == TYPE_1D){//Use 1D filters
     		
     		for(int i=0;i<3;i++){
-    			ret[i] = filters1D[i].getCurrentState()[0][0];
+    			ret[i] = filters[i][TYPE_1D].getCurrentState()[0][0];
     			
     			float controlVector[][] = new float[1][1];
     			controlVector[0][0] = 0;
@@ -111,7 +107,7 @@ public class Kalman {
     			float measurementVector[][] = new float[1][1];
     			measurementVector[0][0] = input[i];
     			
-    			filters1D[i].step(controlVector, measurementVector);
+    			filters[i][TYPE_1D].step(controlVector, measurementVector);
     		}
     		
     	}

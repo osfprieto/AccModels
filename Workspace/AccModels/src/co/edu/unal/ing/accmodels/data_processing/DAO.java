@@ -14,7 +14,8 @@ public class DAO {
     			"/AccModels/"+fileName;
     	
     	try {
-			PrintWriter pw = new PrintWriter(new File(route));
+    		File file = new File(route);
+			PrintWriter pw = new PrintWriter(file);
 			
 			for(String s : message){
 				pw.append(s);
